@@ -7,7 +7,7 @@
     android:background="@color/devices_bg">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewConected"
+        android:id="@+id/recyclerViewConnected"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="3dp"
@@ -107,18 +107,18 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView2" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/emptyConnected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_devices"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewConected"
+        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewConnected"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/recyclerViewConected"
+        app:layout_constraintStart_toStartOf="@+id/recyclerViewConnected"
         app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/emptySearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_devices"

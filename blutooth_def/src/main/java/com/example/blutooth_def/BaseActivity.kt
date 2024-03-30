@@ -1,26 +1,41 @@
 package com.example.blutooth_def
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.blutooth_def.databinding.ActivityBaseBinding
 
 class BaseActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityBaseBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-
+        setContentView(R.layout.fragment_list)
+        initRcView()
     }
 
+    private fun initRcView() {
+        val rcView = findViewById<RecyclerView>(R.id.recyclerViewConnected)
+        rcView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        val adapter = ItemAdapter()
+        rcView.adapter = adapter
+        adapter.submitList(createDeviceList())
+    }
+
+    private fun createDeviceList(): List<ListItem> {
+        val list = ArrayList<ListItem>()
+        for (i in 0 until 5) {
+            list.add(
+                ListItem(
+                    "Device $i",
+                    "34:56:89:56"
+                )
+            )
+        }
+        return list
+    }
 }
