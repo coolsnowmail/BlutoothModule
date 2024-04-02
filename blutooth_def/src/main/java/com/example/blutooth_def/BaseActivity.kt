@@ -14,8 +14,10 @@ class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
-        setContentView(R.layout.fragment_list)
-        initRcView()
+        setContentView(R.layout.activity_base)
+//        initRcView()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.placeHolder, DeviceListFragment()).commit()
     }
 
     private fun initRcView() {

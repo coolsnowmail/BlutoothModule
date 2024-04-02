@@ -44,7 +44,7 @@
                 android:text="@string/avalible_devices" />
 
             <ImageButton
-                android:id="@+id/imageBTOn"
+                android:id="@+id/imageBTSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#00FFFFFF"
@@ -81,7 +81,7 @@
                 android:text="@string/paired_devices" />
 
             <ImageButton
-                android:id="@+id/imageBTNSearch"
+                android:id="@+id/imageBTNOn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#00FFFFFF"

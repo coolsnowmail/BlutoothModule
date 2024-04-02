@@ -4,5 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="card_bg">#0998A5</color>
     <color name="btn_img_bg">#B9B3B0B0</color>
+    <color name="red">#F6052D</color>
     <color name="devices_bg">#353333</color>
 </resources>
