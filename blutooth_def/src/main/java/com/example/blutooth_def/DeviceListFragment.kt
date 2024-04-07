@@ -38,6 +38,8 @@ class DeviceListFragment : Fragment() {
         binding.imageBTNOn.setOnClickListener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
+
+
         registerBthLauncher()
         initAdapter()
         bluetoothState()
