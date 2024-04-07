@@ -2,6 +2,7 @@ package com.example.blutooth_def
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -16,11 +17,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.R
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blutooth_def.databinding.FragmentListBinding
 import com.google.android.material.snackbar.Snackbar
 
 
 class DeviceListFragment : Fragment() {
+    private lateinit var itemAdapter: ItemAdapter
     private lateinit var binding: FragmentListBinding
     private var bthAdapter: BluetoothAdapter? = null
     private lateinit var bthLauncher: ActivityResultLauncher<Intent>
@@ -38,11 +41,41 @@ class DeviceListFragment : Fragment() {
         binding.imageBTNOn.setOnClickListener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
-
-
+        initRcView()
         registerBthLauncher()
         initAdapter()
         bluetoothState()
+    }
+
+    private fun initRcView() = with(binding) {
+        recyclerViewConnected.layoutManager = LinearLayoutManager(requireContext())
+        itemAdapter = ItemAdapter()
+        recyclerViewConnected.adapter = itemAdapter
+
+    }
+
+    private fun getParedDevices() {
+        try {
+            val list = ArrayList<ListItem>()
+            for (i in 1..5) {
+                list.add(
+                    ListItem("Name $i", "address $i")
+                )
+            }
+            val deviceList = bthAdapter?.bondedDevices as Set<BluetoothDevice>
+            deviceList.forEach {
+                list.add(
+                    ListItem(
+                        it.name,
+                        it.address
+                    )
+                )
+            }
+            binding.emptyConnected.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+            itemAdapter.submitList(list)
+        } catch (e: SecurityException) {
+
+        }
     }
 
     private fun bluetoothState() {
@@ -60,8 +93,9 @@ class DeviceListFragment : Fragment() {
         bthLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            if(it.resultCode == Activity.RESULT_OK) {
+            if (it.resultCode == Activity.RESULT_OK) {
                 changeButtonColor(binding.imageBTNOn, Color.GREEN)
+                getParedDevices()
                 Snackbar.make(binding.root, "Блютуз включен", Snackbar.LENGTH_LONG).show()
             } else {
                 changeButtonColor(binding.imageBTNOn, Color.RED)
