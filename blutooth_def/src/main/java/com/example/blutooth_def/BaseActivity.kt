@@ -20,13 +20,13 @@ class BaseActivity : AppCompatActivity() {
             .replace(R.id.placeHolder, DeviceListFragment()).commit()
     }
 
-    private fun initRcView() {
-        val rcView = findViewById<RecyclerView>(R.id.recyclerViewConnected)
-        rcView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val adapter = ItemAdapter()
-        rcView.adapter = adapter
-        adapter.submitList(createDeviceList())
-    }
+//    private fun initRcView() {
+//        val rcView = findViewById<RecyclerView>(R.id.recyclerViewConnected)
+//        rcView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+//        val adapter = ItemAdapter()
+//        rcView.adapter = adapter
+//        adapter.submitList(createDeviceList())
+//    }
 
     private fun createDeviceList(): List<ListItem> {
         val list = ArrayList<ListItem>()
@@ -34,7 +34,8 @@ class BaseActivity : AppCompatActivity() {
             list.add(
                 ListItem(
                     "Device $i",
-                    "34:56:89:56"
+                    "34:56:89:56",
+                    false
                 )
             )
         }

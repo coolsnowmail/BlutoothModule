@@ -22,7 +22,7 @@ import com.example.blutooth_def.databinding.FragmentListBinding
 import com.google.android.material.snackbar.Snackbar
 
 
-class DeviceListFragment : Fragment() {
+class DeviceListFragment : Fragment(), ItemAdapter.Listener {
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var binding: FragmentListBinding
     private var bthAdapter: BluetoothAdapter? = null
@@ -49,7 +49,7 @@ class DeviceListFragment : Fragment() {
 
     private fun initRcView() = with(binding) {
         recyclerViewConnected.layoutManager = LinearLayoutManager(requireContext())
-        itemAdapter = ItemAdapter()
+        itemAdapter = ItemAdapter(this@DeviceListFragment)
         recyclerViewConnected.adapter = itemAdapter
 
     }
@@ -59,7 +59,7 @@ class DeviceListFragment : Fragment() {
             val list = ArrayList<ListItem>()
             for (i in 1..5) {
                 list.add(
-                    ListItem("Name $i", "address $i")
+                    ListItem("Name $i", "address $i", false)
                 )
             }
             val deviceList = bthAdapter?.bondedDevices as Set<BluetoothDevice>
@@ -67,7 +67,8 @@ class DeviceListFragment : Fragment() {
                 list.add(
                     ListItem(
                         it.name,
-                        it.address
+                        it.address,
+                        false
                     )
                 )
             }
@@ -102,5 +103,8 @@ class DeviceListFragment : Fragment() {
                 Snackbar.make(binding.root, "Блютуз отключен", Snackbar.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onClick(device: ListItem) {
     }
 }
