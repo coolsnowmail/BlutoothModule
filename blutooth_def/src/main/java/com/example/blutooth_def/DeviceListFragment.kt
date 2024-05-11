@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 
 
 class DeviceListFragment : Fragment(), ItemAdapter.Listener {
+    private var preferences: SharedPreferences? = null
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var binding: FragmentListBinding
     private var bthAdapter: BluetoothAdapter? = null
@@ -38,6 +40,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        preferences = activity?.getSharedPreferences(BluetoothConstants.PREFERENCES, Context.MODE_PRIVATE)
         binding.imageBTNOn.setOnClickListener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
@@ -68,7 +71,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
                     ListItem(
                         it.name,
                         it.address,
-                        false
+                        preferences?.getString(BluetoothConstants.MAC, "") == it.address
                     )
                 )
             }
@@ -105,6 +108,12 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         }
     }
 
+    private fun saveMac(mac: String) {
+        val editor = preferences?.edit()
+        editor?.putString(BluetoothConstants.MAC, mac)
+        editor?.apply()
+    }
     override fun onClick(device: ListItem) {
+        saveMac(device.mac )
     }
 }
