@@ -1,5 +1,6 @@
 package com.example.blutooth_def
 
+import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -8,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -29,6 +31,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
     private lateinit var binding: FragmentListBinding
     private var bthAdapter: BluetoothAdapter? = null
     private lateinit var bthLauncher: ActivityResultLauncher<Intent>
+    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,10 +43,12 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = activity?.getSharedPreferences(BluetoothConstants.PREFERENCES, Context.MODE_PRIVATE)
+        preferences =
+            activity?.getSharedPreferences(BluetoothConstants.PREFERENCES, Context.MODE_PRIVATE)
         binding.imageBTNOn.setOnClickListener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
+        checkPermission()
         initRcView()
         registerBthLauncher()
         initAdapter()
@@ -108,12 +113,44 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         }
     }
 
+    private fun registerPermissionListener() {
+        pLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+
+            }
+    }
+
+    private fun checkPermission() {
+        if (!checkBtPermission()) {
+            registerPermissionListener()
+            launchBtPermission()
+        }
+    }
+
+    private fun launchBtPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            pLauncher.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            )
+        } else {
+            pLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            )
+        }
+    }
+
     private fun saveMac(mac: String) {
         val editor = preferences?.edit()
         editor?.putString(BluetoothConstants.MAC, mac)
         editor?.apply()
     }
+
     override fun onClick(device: ListItem) {
-        saveMac(device.mac )
+        saveMac(device.mac)
     }
 }
