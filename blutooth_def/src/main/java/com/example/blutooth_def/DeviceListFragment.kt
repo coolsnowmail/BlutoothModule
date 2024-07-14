@@ -18,11 +18,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.R
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blutooth_def.databinding.FragmentListBinding
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar
 class DeviceListFragment : Fragment(), ItemAdapter.Listener {
     private var preferences: SharedPreferences? = null
     private lateinit var itemAdapter: ItemAdapter
+    private lateinit var discoveryAdapter: ItemAdapter
     private lateinit var binding: FragmentListBinding
     private var bthAdapter: BluetoothAdapter? = null
     private lateinit var bthLauncher: ActivityResultLauncher<Intent>
@@ -71,22 +69,21 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         itemAdapter = ItemAdapter(this@DeviceListFragment)
         recyclerViewConnected.adapter = itemAdapter
 
+        recyclerViewSearch.layoutManager = LinearLayoutManager(requireContext())
+        discoveryAdapter = ItemAdapter(this@DeviceListFragment)
+        recyclerViewSearch.adapter = discoveryAdapter
+
     }
+
 
     private fun getParedDevices() {
         try {
             val list = ArrayList<ListItem>()
-            for (i in 1..5) {
-                list.add(
-                    ListItem("Name $i", "address $i", false)
-                )
-            }
             val deviceList = bthAdapter?.bondedDevices as Set<BluetoothDevice>
             deviceList.forEach {
                 list.add(
                     ListItem(
-                        it.name,
-                        it.address,
+                        it,
                         preferences?.getString(BluetoothConstants.MAC, "") == it.address
                     )
                 )
@@ -161,25 +158,33 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         editor?.apply()
     }
 
-    override fun onClick(device: ListItem) {
-        saveMac(device.mac)
+    override fun onClick(item: ListItem) {
+        saveMac(item.device.address)
     }
 
     private val fbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == BluetoothDevice.ACTION_FOUND) {
-                val device =
-                    intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                try {
-                    Log.d("MyLog", "Device ${device?.name}")
-                } catch (e: SecurityException) {
+            when (intent?.action) {
+                BluetoothDevice.ACTION_FOUND -> {
+                    val device =
+                        intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                    val list = mutableSetOf<ListItem>()
+                    list.addAll(discoveryAdapter.currentList)
+                    if (device != null) list.add(ListItem(device, false))
+                    discoveryAdapter.submitList(list.toList())
+                    try {
+                        Log.d("MyLog", "Device ${device?.name}")
+                    } catch (e: SecurityException) {
+
+                    }
 
                 }
+                BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
 
-            } else if (intent?.action == BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
+                }
+                BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
 
-            } else if (intent?.action == BluetoothAdapter.ACTION_DISCOVERY_FINISHED) {
-
+                }
             }
         }
 

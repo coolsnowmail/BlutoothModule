@@ -28,17 +28,4 @@ class BaseActivity : AppCompatActivity() {
 //        adapter.submitList(createDeviceList())
 //    }
 
-    private fun createDeviceList(): List<ListItem> {
-        val list = ArrayList<ListItem>()
-        for (i in 0 until 5) {
-            list.add(
-                ListItem(
-                    "Device $i",
-                    "34:56:89:56",
-                    false
-                )
-            )
-        }
-        return list
-    }
 }
