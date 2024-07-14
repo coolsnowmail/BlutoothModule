@@ -9,28 +9,35 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blutooth_def.databinding.ListItemBinding
 
-class ItemAdapter(private val listener: Listener) :
+class ItemAdapter(private val listener: Listener, val adaptorType: Boolean) :
     ListAdapter<ListItem, ItemAdapter.MyHolder>(Comparator()) {
     private var oldCheckBox: CheckBox? = null
 
-    class MyHolder(view: View, private val adapter: ItemAdapter, private val listener: Listener) :
+    class MyHolder(view: View, private val adapter: ItemAdapter, private val listener: Listener, val adaptorType: Boolean) :
         RecyclerView.ViewHolder(view) {
         private val b = ListItemBinding.bind(view)
-        private var device: ListItem? = null
+        private var item1: ListItem? = null
 
         init {
             b.checkBox.setOnClickListener {
-                device?.let { it1 -> listener.onClick(it1) }
+                item1?.let { it1 -> listener.onClick(it1) }
                 adapter.selectCheckBox(it as CheckBox)
             }
             itemView.setOnClickListener {
-                device?.let { it1 -> listener.onClick(it1) }
-                adapter.selectCheckBox(it as CheckBox)
+                if(adaptorType){
+                    try {
+                        item1?.device?.createBond()
+                    } catch ( e: SecurityException) {}
+                } else {
+                    adapter.selectCheckBox(it as CheckBox)
+                    item1?.let { it1 -> listener.onClick(it1) }
+                }
             }
         }
 
         fun bind(item: ListItem) = with(b) {
-            device = item
+            checkBox.visibility = if(adaptorType) View.GONE else View.VISIBLE
+            item1 = item
             try {
                 deviceName.text = item.device.name
                 mac.text = item.device.address
@@ -53,7 +60,7 @@ class ItemAdapter(private val listener: Listener) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item, parent, false)
-        return MyHolder(view, this, listener)
+        return MyHolder(view, this, listener, adaptorType)
     }
 
     override fun onBindViewHolder(holder: MyHolder, position: Int) {

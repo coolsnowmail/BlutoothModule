@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,6 +51,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
         binding.imageBTSearch.setOnClickListener {
+            Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
             try {
                 bthAdapter?.startDiscovery()
             } catch (e: SecurityException) {
@@ -66,11 +68,11 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
 
     private fun initRcView() = with(binding) {
         recyclerViewConnected.layoutManager = LinearLayoutManager(requireContext())
-        itemAdapter = ItemAdapter(this@DeviceListFragment)
+        itemAdapter = ItemAdapter(this@DeviceListFragment, false)
         recyclerViewConnected.adapter = itemAdapter
 
         recyclerViewSearch.layoutManager = LinearLayoutManager(requireContext())
-        discoveryAdapter = ItemAdapter(this@DeviceListFragment)
+        discoveryAdapter = ItemAdapter(this@DeviceListFragment, true)
         recyclerViewSearch.adapter = discoveryAdapter
 
     }
@@ -158,8 +160,8 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         editor?.apply()
     }
 
-    override fun onClick(item: ListItem) {
-        saveMac(item.device.address)
+    override fun onClick(device: ListItem) {
+        saveMac(device.device.address)
     }
 
     private val fbReceiver = object : BroadcastReceiver() {
@@ -172,6 +174,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
                     list.addAll(discoveryAdapter.currentList)
                     if (device != null) list.add(ListItem(device, false))
                     discoveryAdapter.submitList(list.toList())
+                    binding.emptySearch.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
                     try {
                         Log.d("MyLog", "Device ${device?.name}")
                     } catch (e: SecurityException) {
@@ -180,7 +183,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
 
                 }
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-
+                    getParedDevices()
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
 
