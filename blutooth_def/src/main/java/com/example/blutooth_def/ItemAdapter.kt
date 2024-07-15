@@ -16,28 +16,28 @@ class ItemAdapter(private val listener: Listener, val adaptorType: Boolean) :
     class MyHolder(view: View, private val adapter: ItemAdapter, private val listener: Listener, val adaptorType: Boolean) :
         RecyclerView.ViewHolder(view) {
         private val b = ListItemBinding.bind(view)
-        private var item1: ListItem? = null
+        private var device: ListItem? = null
 
         init {
             b.checkBox.setOnClickListener {
-                item1?.let { it1 -> listener.onClick(it1) }
+                device?.let { it1 -> listener.onClick(it1) }
                 adapter.selectCheckBox(it as CheckBox)
             }
             itemView.setOnClickListener {
                 if(adaptorType){
                     try {
-                        item1?.device?.createBond()
+                        device?.device?.createBond()
                     } catch ( e: SecurityException) {}
                 } else {
                     adapter.selectCheckBox(it as CheckBox)
-                    item1?.let { it1 -> listener.onClick(it1) }
+                    device?.let { it1 -> listener.onClick(it1) }
                 }
             }
         }
 
         fun bind(item: ListItem) = with(b) {
             checkBox.visibility = if(adaptorType) View.GONE else View.VISIBLE
-            item1 = item
+            device = item
             try {
                 deviceName.text = item.device.name
                 mac.text = item.device.address

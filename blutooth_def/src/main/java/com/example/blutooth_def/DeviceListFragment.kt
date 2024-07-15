@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat.registerReceiver
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blutooth_def.databinding.FragmentListBinding
 import com.google.android.material.snackbar.Snackbar
@@ -51,13 +52,20 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
         binding.imageBTSearch.setOnClickListener {
-            Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "kfldfkdfkfdf ${bthAdapter?.isEnabled == true}", Toast.LENGTH_LONG).show()
             try {
-                bthAdapter?.startDiscovery()
+                if (bthAdapter?.isEnabled == true) {
+                    it.visibility = View.GONE
+                    binding.pbSearch.visibility = View.VISIBLE
+                    bthAdapter?.startDiscovery()
+                }
+//                Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
+//                val deviceList = bthAdapter?.dis as Set<BluetoothDevice>
             } catch (e: SecurityException) {
-
+//                Toast.makeText(context, "kfldfkdfkfdf2", Toast.LENGTH_LONG).show()
             }
         }
+//        Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
         intentFilters()
         checkPermission()
         initRcView()
@@ -65,6 +73,8 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         initAdapter()
         bluetoothState()
     }
+
+//    Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
 
     private fun initRcView() = with(binding) {
         recyclerViewConnected.layoutManager = LinearLayoutManager(requireContext())
@@ -164,41 +174,41 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         saveMac(device.device.address)
     }
 
-    private val fbReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
-                BluetoothDevice.ACTION_FOUND -> {
-                    val device =
-                        intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                    val list = mutableSetOf<ListItem>()
-                    list.addAll(discoveryAdapter.currentList)
-                    if (device != null) list.add(ListItem(device, false))
-                    discoveryAdapter.submitList(list.toList())
-                    binding.emptySearch.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-                    try {
-                        Log.d("MyLog", "Device ${device?.name}")
-                    } catch (e: SecurityException) {
+    private val bReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, intent: Intent?) {
+            Toast.makeText(context, "kfldfkdfkfdf2", Toast.LENGTH_LONG).show()
 
-                    }
+            if (intent?.action == BluetoothDevice.ACTION_FOUND) {
+                val device =
+                    intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                val list = mutableSetOf<ListItem>()
+                list.addAll(discoveryAdapter.currentList)
+                if (device != null) list.add(ListItem(device, false))
+                discoveryAdapter.submitList(list.toList())
+                try {
+                    Log.d("MyLog", "Device: ${device?.name}")
+                } catch (e: SecurityException) {
 
                 }
-                BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    getParedDevices()
-                }
-                BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-
-                }
+            } else if (intent?.action == BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
+                getParedDevices()
+            } else if (intent?.action == BluetoothAdapter.ACTION_DISCOVERY_FINISHED) {
+                binding.imageBTSearch.visibility = View.VISIBLE
+                binding.pbSearch.visibility = View.GONE
             }
         }
-
     }
 
     private fun intentFilters() {
+        Toast.makeText(context, "kfldfkdfkfdf3 ${bReceiver.resultCode}", Toast.LENGTH_LONG).show()
+
         val f1 = IntentFilter(BluetoothDevice.ACTION_FOUND)
         val f2 = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
         val f3 = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-        activity?.registerReceiver(fbReceiver, f1)
-        activity?.registerReceiver(fbReceiver, f2)
-        activity?.registerReceiver(fbReceiver, f3)
+        activity?.registerReceiver(bReceiver, f1)
+        activity?.registerReceiver(bReceiver, f2)
+        activity?.registerReceiver(bReceiver, f3)
+
+
     }
 }
