@@ -52,6 +52,9 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
         binding.imageBTSearch.setOnClickListener {
+            Log.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            bthAdapter?.startDiscovery()
+            Log.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             try {
                 if (bthAdapter?.isEnabled == true) {
                     it.visibility = View.GONE

@@ -15,17 +15,7 @@ class BaseActivity : AppCompatActivity() {
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_base)
-//        initRcView()
         supportFragmentManager.beginTransaction()
             .replace(R.id.placeHolder, DeviceListFragment()).commit()
     }
-
-//    private fun initRcView() {
-//        val rcView = findViewById<RecyclerView>(R.id.recyclerViewConnected)
-//        rcView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-//        val adapter = ItemAdapter()
-//        rcView.adapter = adapter
-//        adapter.submitList(createDeviceList())
-//    }
-
 }
