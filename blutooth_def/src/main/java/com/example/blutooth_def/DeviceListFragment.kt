@@ -59,13 +59,9 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
                     binding.pbSearch.visibility = View.VISIBLE
                     bthAdapter?.startDiscovery()
                 }
-//                Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
-//                val deviceList = bthAdapter?.dis as Set<BluetoothDevice>
             } catch (e: SecurityException) {
-//                Toast.makeText(context, "kfldfkdfkfdf2", Toast.LENGTH_LONG).show()
             }
         }
-//        Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
         intentFilters()
         checkPermission()
         initRcView()
@@ -74,7 +70,6 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
         bluetoothState()
     }
 
-//    Toast.makeText(context, "kfldfkdfkfdf", Toast.LENGTH_LONG).show()
 
     private fun initRcView() = with(binding) {
         recyclerViewConnected.layoutManager = LinearLayoutManager(requireContext())
@@ -200,7 +195,7 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
     }
 
     private fun intentFilters() {
-        Toast.makeText(context, "kfldfkdfkfdf3 ${bReceiver.resultCode}", Toast.LENGTH_LONG).show()
+//        Toast.makeText(context, "kfldfkdfkfdf3 ${bReceiver.resultCode}", Toast.LENGTH_LONG).show()
 
         val f1 = IntentFilter(BluetoothDevice.ACTION_FOUND)
         val f2 = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
