@@ -52,7 +52,6 @@ class DeviceListFragment : Fragment(), ItemAdapter.Listener {
             bthLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
         binding.imageBTSearch.setOnClickListener {
-            Toast.makeText(context, "kfldfkdfkfdf ${bthAdapter?.isEnabled == true}", Toast.LENGTH_LONG).show()
             try {
                 if (bthAdapter?.isEnabled == true) {
                     it.visibility = View.GONE
