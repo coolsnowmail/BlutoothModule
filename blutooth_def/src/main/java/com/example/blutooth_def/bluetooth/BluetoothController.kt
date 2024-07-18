@@ -12,6 +12,13 @@ class BluetoothController(private val adapter: BluetoothAdapter)  {
         }
     }
 
+    fun sendMessage(message: String) {
+        connectThread?.sendMessage(message)
+    }
+
+    fun closeConnection() {
+        connectThread?.closeConnection()
+    }
     companion object {
         const val BLUETOOTH_CONNECTED = "bluetooth_connected"
         const val BLUETOOTH_NOT_CONNECTED = "bluetooth_not_connected"
