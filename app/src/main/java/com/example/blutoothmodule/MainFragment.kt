@@ -7,13 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.blutooth_def.BluetoothConstants
 import com.example.blutooth_def.bluetooth.BluetoothController
 import com.example.blutoothmodule.databinding.FragmentMainBinding
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), BluetoothController.Listener {
 
     private lateinit var binding: FragmentMainBinding
     private lateinit var bluetoothController: BluetoothController
@@ -29,7 +30,8 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initBTAdapter()
-        val pref = activity?.getSharedPreferences(BluetoothConstants.PREFERENCES, Context.MODE_PRIVATE)
+        val pref =
+            activity?.getSharedPreferences(BluetoothConstants.PREFERENCES, Context.MODE_PRIVATE)
         bluetoothController = BluetoothController(btAdapter)
         val mac = pref?.getString(BluetoothConstants.MAC, "")
         binding.bList.setOnClickListener {
@@ -37,12 +39,34 @@ class MainFragment : Fragment() {
         }
 
         binding.bConnect.setOnClickListener {
-            bluetoothController.connect(mac ?: "")
+            bluetoothController.connect(mac ?: "", this)
         }
     }
 
     private fun initBTAdapter() {
         val bManager = activity?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         btAdapter = bManager.adapter
+    }
+
+    override fun onReceive(message: String) {
+        activity?.runOnUiThread {
+            when (message) {
+                BluetoothController.BLUETOOTH_CONNECTED -> {
+                    binding.bConnect.backgroundTintList = AppCompatResources
+                        .getColorStateList(requireContext(), R.color.red)
+                    binding.bConnect.text = "Disconnect"
+                }
+
+                BluetoothController.BLUETOOTH_NOT_CONNECTED -> {
+                    binding.bConnect.backgroundTintList = AppCompatResources
+                        .getColorStateList(requireContext(), R.color.green)
+                    binding.bConnect.text = "Connect"
+                }
+
+                else -> {
+
+                }
+            }
+        }
     }
 }
